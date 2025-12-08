@@ -5,6 +5,7 @@ export enum Tab {
     FlowList,
     Options,
     Flow,
+    Metrics,
 }
 
 const tabsSlice = createSlice({

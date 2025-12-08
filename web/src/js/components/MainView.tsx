@@ -6,6 +6,7 @@ import { useAppSelector } from "../ducks";
 import CaptureSetup from "./Modes/CaptureSetup";
 import Modes from "./Modes";
 import { Tab } from "../ducks/ui/tabs";
+import MetricsPanel from "./Kidsnote/MetricsPanel";
 
 export default function MainView() {
     const hasOneFlowSelected = useAppSelector(
@@ -18,6 +19,8 @@ export default function MainView() {
         <div className="main-view">
             {currentTab === Tab.Capture ? (
                 <Modes />
+            ) : currentTab === Tab.Metrics ? (
+                <MetricsPanel />
             ) : (
                 <>
                     {hasFlows ? <FlowTable /> : <CaptureSetup />}
