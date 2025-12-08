@@ -6,6 +6,7 @@ export enum Tab {
     Options,
     Flow,
     Metrics,
+    AdTracking,
 }
 
 const tabsSlice = createSlice({

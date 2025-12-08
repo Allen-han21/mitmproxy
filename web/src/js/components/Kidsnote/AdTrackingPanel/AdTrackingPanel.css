@@ -1,0 +1,196 @@
+.kidsnote-ad-tracking-panel {
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header */
+.ad-tracking-header {
+    margin-bottom: 20px;
+}
+
+.ad-tracking-header h2 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.ad-tracking-header .description {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Controls */
+.ad-tracking-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.search-box {
+    flex: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+}
+
+.status-filter {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    outline: none;
+}
+
+.clear-button {
+    padding: 10px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.clear-button:hover {
+    background: #dc2626;
+}
+
+/* Stats */
+.ad-tracking-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Table */
+.ad-tracking-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #666;
+}
+
+.empty-state p {
+    margin: 8px 0;
+}
+
+.empty-state .hint {
+    font-size: 14px;
+    color: #999;
+}
+
+.ad-tracking-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ad-tracking-table thead {
+    background: #f3f4f6;
+}
+
+.ad-tracking-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.ad-tracking-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background 0.2s;
+}
+
+.ad-tracking-table tbody tr:hover {
+    background: #f9fafb;
+    cursor: pointer;
+}
+
+.ad-tracking-table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+.ad-tracking-table .ad-id code {
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: "Courier New", monospace;
+    color: #4b5563;
+}
+
+.ad-tracking-table .ad-title {
+    font-weight: 500;
+}
+
+.ad-tracking-table .ad-status {
+    text-align: center;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ad-tracking-table .ad-time {
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #6b7280;
+}
