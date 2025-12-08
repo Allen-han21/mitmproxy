@@ -8,11 +8,15 @@ import {
     isClickFlow,
     extractAdsid,
     createTrackingEvent,
+    createPacketDetail,
     formatTimestamp,
     formatStatus,
     getStatusColor,
+    formatPacketType,
+    getPacketTypeColor,
+    isAdApiFlow,
 } from "./parseAdTracking";
-import { AdData, AdStatus, TrackingEventType } from "./types";
+import { AdData, AdStatus, TrackingEventType, PacketDetail } from "./types";
 import "./AdTrackingPanel.css";
 
 type AdTrackingPanelProps = {
@@ -85,9 +89,13 @@ function parseAdDataFromFlows(flows: Flow[]): Map<string, AdData> {
     return adsMap;
 }
 
+type ViewType = "ads" | "packets";
+
 export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState<AdStatus | "all">("all");
+    const [currentView, setCurrentView] = React.useState<ViewType>("ads");
+    const [selectedPacket, setSelectedPacket] = React.useState<PacketDetail | null>(null);
 
     const adsMap = React.useMemo(
         () => parseAdDataFromFlows(flows),
@@ -119,6 +127,27 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
             return timeB - timeA;
         });
     }, [adsMap, searchQuery, statusFilter]);
+
+    // 패킷 목록 추출
+    const packets = React.useMemo(() => {
+        const packetList: PacketDetail[] = [];
+
+        flows.forEach((flow) => {
+            if (flow.type !== "http") return;
+            const httpFlow = flow as HTTPFlow;
+
+            // 광고 API 패킷만 필터링
+            if (isAdApiFlow(httpFlow)) {
+                const packet = createPacketDetail(httpFlow);
+                if (packet) {
+                    packetList.push(packet);
+                }
+            }
+        });
+
+        // 최신순 정렬
+        return packetList.sort((a, b) => b.timestamp - a.timestamp);
+    }, [flows]);
 
     const handleClear = () => {
         if (confirm("모든 광고 트래킹 데이터를 삭제하시겠습니까?")) {
@@ -208,16 +237,33 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                 </div>
             </div>
 
+            {/* View Tabs */}
+            <div className="view-tabs">
+                <button
+                    className={`view-tab ${currentView === "ads" ? "active" : ""}`}
+                    onClick={() => setCurrentView("ads")}
+                >
+                    📊 광고 요약
+                </button>
+                <button
+                    className={`view-tab ${currentView === "packets" ? "active" : ""}`}
+                    onClick={() => setCurrentView("packets")}
+                >
+                    📦 패킷 상세
+                </button>
+            </div>
+
             <div className="ad-tracking-table-container">
-                {ads.length === 0 ? (
-                    <div className="empty-state">
-                        <p>📭 광고 트래킹 데이터가 없습니다</p>
-                        <p className="hint">
-                            키즈노트 앱에서 광고를 요청하면 자동으로 추적됩니다
-                        </p>
-                    </div>
-                ) : (
-                    <table className="ad-tracking-table">
+                {currentView === "ads" ? (
+                    ads.length === 0 ? (
+                        <div className="empty-state">
+                            <p>📭 광고 트래킹 데이터가 없습니다</p>
+                            <p className="hint">
+                                키즈노트 앱에서 광고를 요청하면 자동으로 추적됩니다
+                            </p>
+                        </div>
+                    ) : (
+                        <table className="ad-tracking-table">
                         <thead>
                             <tr>
                                 <th>Ad ID</th>
@@ -256,8 +302,203 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                             ))}
                         </tbody>
                     </table>
+                    )
+                ) : (
+                    /* Packets View */
+                    packets.length === 0 ? (
+                        <div className="empty-state">
+                            <p>📭 패킷 데이터가 없습니다</p>
+                            <p className="hint">
+                                키즈노트 앱에서 광고 API를 호출하면 자동으로 추적됩니다
+                            </p>
+                        </div>
+                    ) : (
+                        <table className="ad-tracking-table">
+                            <thead>
+                                <tr>
+                                    <th>시간</th>
+                                    <th>타입</th>
+                                    <th>Method</th>
+                                    <th>URL</th>
+                                    <th>Ad ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {packets.map((packet) => (
+                                    <tr
+                                        key={packet.id}
+                                        onClick={() => setSelectedPacket(packet)}
+                                    >
+                                        <td className="ad-time">
+                                            {formatTimestamp(packet.timestamp)}
+                                        </td>
+                                        <td>
+                                            <span
+                                                className="packet-type-badge"
+                                                style={{
+                                                    backgroundColor: getPacketTypeColor(
+                                                        packet.type
+                                                    ),
+                                                }}
+                                            >
+                                                {formatPacketType(packet.type)}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className="packet-method">
+                                                {packet.method}
+                                            </span>
+                                        </td>
+                                        <td className="packet-url">
+                                            {packet.path}
+                                        </td>
+                                        <td className="ad-id">
+                                            {packet.adsid ? (
+                                                <code>{packet.adsid}</code>
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </td>
+                                        <td>
+                                            {packet.statusCode ? (
+                                                <span
+                                                    className={`packet-status-code ${
+                                                        packet.statusCode >= 200 &&
+                                                        packet.statusCode < 300
+                                                            ? "success"
+                                                            : "error"
+                                                    }`}
+                                                >
+                                                    {packet.statusCode}
+                                                </span>
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )
                 )}
             </div>
+
+            {/* Packet Detail Modal */}
+            {selectedPacket && (
+                <div
+                    className="packet-detail-modal"
+                    onClick={() => setSelectedPacket(null)}
+                >
+                    <div
+                        className="packet-detail-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="packet-detail-header">
+                            <h3>📦 패킷 상세 정보</h3>
+                            <button
+                                className="close-button"
+                                onClick={() => setSelectedPacket(null)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>타입:</strong>{" "}
+                            <span
+                                className="packet-type-badge"
+                                style={{
+                                    backgroundColor: getPacketTypeColor(
+                                        selectedPacket.type
+                                    ),
+                                    marginLeft: "8px",
+                                }}
+                            >
+                                {formatPacketType(selectedPacket.type)}
+                            </span>
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>시간:</strong>{" "}
+                            {formatTimestamp(selectedPacket.timestamp)}
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Method:</strong>{" "}
+                            <span className="packet-method">
+                                {selectedPacket.method}
+                            </span>
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Full URL:</strong>
+                            <div
+                                className="packet-url"
+                                style={{
+                                    marginTop: "8px",
+                                    padding: "8px",
+                                    background: "#f3f4f6",
+                                    borderRadius: "4px",
+                                }}
+                            >
+                                {selectedPacket.url}
+                            </div>
+                        </div>
+
+                        {selectedPacket.adsid && (
+                            <div style={{ marginBottom: "16px" }}>
+                                <strong>Ad ID:</strong>{" "}
+                                <code
+                                    style={{
+                                        background: "#f3f4f6",
+                                        padding: "4px 8px",
+                                        borderRadius: "4px",
+                                    }}
+                                >
+                                    {selectedPacket.adsid}
+                                </code>
+                            </div>
+                        )}
+
+                        {selectedPacket.statusCode && (
+                            <div style={{ marginBottom: "16px" }}>
+                                <strong>Status Code:</strong>{" "}
+                                <span
+                                    className={`packet-status-code ${
+                                        selectedPacket.statusCode >= 200 &&
+                                        selectedPacket.statusCode < 300
+                                            ? "success"
+                                            : "error"
+                                    }`}
+                                >
+                                    {selectedPacket.statusCode}
+                                </span>
+                            </div>
+                        )}
+
+                        {selectedPacket.queryParams.size > 0 && (
+                            <div>
+                                <strong>Query Parameters:</strong>
+                                <ul className="query-params-list">
+                                    {Array.from(selectedPacket.queryParams.entries()).map(
+                                        ([key, value]) => (
+                                            <li key={key}>
+                                                <span className="query-param-key">
+                                                    {key}:
+                                                </span>
+                                                <span className="query-param-value">
+                                                    {value}
+                                                </span>
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

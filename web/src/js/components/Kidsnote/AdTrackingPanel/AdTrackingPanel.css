@@ -194,3 +194,161 @@
     font-size: 13px;
     color: #6b7280;
 }
+
+/* View Tabs */
+.view-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.view-tab {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: -2px;
+}
+
+.view-tab:hover {
+    color: #3b82f6;
+}
+
+.view-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+/* Packet View */
+.packet-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.packet-url {
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #4b5563;
+    word-break: break-all;
+}
+
+.packet-method {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.packet-status-code {
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.packet-status-code.success {
+    color: #10b981;
+}
+
+.packet-status-code.error {
+    color: #ef4444;
+}
+
+/* Detail Modal (for future use) */
+.packet-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.packet-detail-content {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.packet-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.packet-detail-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.close-button:hover {
+    background: #f3f4f6;
+}
+
+.query-params-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.query-params-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+}
+
+.query-params-list li:last-child {
+    border-bottom: none;
+}
+
+.query-param-key {
+    font-weight: 600;
+    color: #4b5563;
+    min-width: 120px;
+}
+
+.query-param-value {
+    font-family: "Courier New", monospace;
+    color: #6b7280;
+    word-break: break-all;
+}

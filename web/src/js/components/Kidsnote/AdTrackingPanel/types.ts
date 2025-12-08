@@ -85,3 +85,19 @@ export interface AdTrackingState {
         status?: AdStatus;   // 상태 필터
     };
 }
+
+/**
+ * 패킷 상세 정보 (req/imp/click 패킷용)
+ */
+export interface PacketDetail {
+    id: string;                  // flow ID
+    timestamp: number;           // Unix timestamp (ms)
+    type: TrackingEventType;     // 패킷 타입
+    adsid?: string;              // Ad ID (imp/click만)
+    method: string;              // HTTP method
+    url: string;                 // Full URL
+    path: string;                // Path
+    queryParams: Map<string, string>;  // Query parameters
+    statusCode?: number;         // Response status code
+    responseSize?: number;       // Response size (bytes)
+}

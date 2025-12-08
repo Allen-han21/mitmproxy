@@ -5,6 +5,7 @@ import {
     AdStatus,
     TrackingEvent,
     TrackingEventType,
+    PacketDetail,
 } from "./types";
 
 /**
@@ -201,6 +202,73 @@ export function getStatusColor(status: AdStatus): string {
         case AdStatus.IMPRESSED:
             return "#3b82f6"; // Blue
         case AdStatus.CLICKED:
+            return "#10b981"; // Green
+        default:
+            return "#6b7280";
+    }
+}
+
+/**
+ * Flow에서 패킷 타입 결정
+ */
+export function getPacketType(flow: HTTPFlow): TrackingEventType | null {
+    if (isAdRequestFlow(flow)) return TrackingEventType.REQUEST;
+    if (isImpressionFlow(flow)) return TrackingEventType.IMPRESSION;
+    if (isClickFlow(flow)) return TrackingEventType.CLICK;
+    return null;
+}
+
+/**
+ * Flow에서 PacketDetail 생성
+ */
+export function createPacketDetail(flow: HTTPFlow): PacketDetail | null {
+    const type = getPacketType(flow);
+    if (!type) return null;
+
+    const fullUrl = `${flow.request.scheme}://${flow.request.pretty_host}${flow.request.path}`;
+    const queryParams = parseQueryString(fullUrl);
+    const adsid = extractAdsid(flow);
+
+    return {
+        id: flow.id,
+        timestamp: flow.request.timestamp_start * 1000,
+        type,
+        adsid: adsid || undefined,
+        method: flow.request.method,
+        url: fullUrl,
+        path: flow.request.path,
+        queryParams,
+        statusCode: flow.response?.status_code,
+        responseSize: flow.response?.content?.length,
+    };
+}
+
+/**
+ * 패킷 타입을 한글로 표시
+ */
+export function formatPacketType(type: TrackingEventType): string {
+    switch (type) {
+        case TrackingEventType.REQUEST:
+            return "광고 요청";
+        case TrackingEventType.IMPRESSION:
+            return "노출";
+        case TrackingEventType.CLICK:
+            return "클릭";
+        default:
+            return type;
+    }
+}
+
+/**
+ * 패킷 타입에 따른 색상 반환
+ */
+export function getPacketTypeColor(type: TrackingEventType): string {
+    switch (type) {
+        case TrackingEventType.REQUEST:
+            return "#8b5cf6"; // Purple
+        case TrackingEventType.IMPRESSION:
+            return "#3b82f6"; // Blue
+        case TrackingEventType.CLICK:
             return "#10b981"; // Green
         default:
             return "#6b7280";
