@@ -15,11 +15,15 @@ const AD_API_HOST = "ads-api-kcsandbox-01.kidsnote.com";
 
 /**
  * API 엔드포인트 패턴
+ * 모든 광고 관련 API를 포함하도록 확장
  */
 const ENDPOINTS = {
-    REQUEST: /\/api\/v1\/kidsnote_benefit\/benefit\/req$/,
-    IMPRESSION: /\/api\/v1\/kidsnote_benefit\/benefit\/imp$/,
-    CLICK: /\/api\/v2\/kidsnote_benefit\/benefit\/click$/,
+    // 광고 요청: /req로 끝나는 모든 경로
+    REQUEST: /\/req(\?|$)/,
+    // 노출: /imp로 끝나는 모든 경로
+    IMPRESSION: /\/imp(\?|$)/,
+    // 클릭: /click로 끝나는 모든 경로
+    CLICK: /\/click(\?|$)/,
 };
 
 /**
