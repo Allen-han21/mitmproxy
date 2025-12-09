@@ -16,7 +16,12 @@ import {
     getPacketTypeColor,
     isAdApiFlow,
 } from "./parseAdTracking";
-import { AdData, AdStatus, TrackingEventType, PacketDetail } from "./types";
+import {
+    parseTiaraEvents,
+    extractUniqueActionTypes,
+    formatTiaraTimestamp,
+} from "./parseTiara";
+import { AdData, AdStatus, TrackingEventType, PacketDetail, TiaraEvent } from "./types";
 import "./AdTrackingPanel.css";
 
 type AdTrackingPanelProps = {
@@ -89,13 +94,15 @@ function parseAdDataFromFlows(flows: Flow[]): Map<string, AdData> {
     return adsMap;
 }
 
-type ViewType = "ads" | "packets";
+type ViewType = "ads" | "packets" | "tiara";
 
 export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState<AdStatus | "all">("all");
     const [currentView, setCurrentView] = React.useState<ViewType>("ads");
     const [selectedPacket, setSelectedPacket] = React.useState<PacketDetail | null>(null);
+    const [selectedTiaraEvent, setSelectedTiaraEvent] = React.useState<TiaraEvent | null>(null);
+    const [actionTypeFilter, setActionTypeFilter] = React.useState<string>("all");
 
     const adsMap = React.useMemo(
         () => parseAdDataFromFlows(flows),
@@ -148,6 +155,36 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
         // 최신순 정렬
         return packetList.sort((a, b) => b.timestamp - a.timestamp);
     }, [flows]);
+
+    // Tiara 이벤트 목록 추출
+    const tiaraEvents = React.useMemo(() => {
+        const eventList: TiaraEvent[] = [];
+
+        flows.forEach((flow) => {
+            if (flow.type !== "http") return;
+            const httpFlow = flow as HTTPFlow;
+
+            // Tiara API 요청 파싱
+            const events = parseTiaraEvents(httpFlow);
+            eventList.push(...events);
+        });
+
+        // 최신순 정렬
+        return eventList.sort((a, b) => b.timestamp - a.timestamp);
+    }, [flows]);
+
+    // 필터링된 Tiara 이벤트
+    const filteredTiaraEvents = React.useMemo(() => {
+        if (actionTypeFilter === "all") {
+            return tiaraEvents;
+        }
+        return tiaraEvents.filter((event) => event.actionType === actionTypeFilter);
+    }, [tiaraEvents, actionTypeFilter]);
+
+    // 고유한 action type 추출
+    const uniqueActionTypes = React.useMemo(() => {
+        return extractUniqueActionTypes(tiaraEvents);
+    }, [tiaraEvents]);
 
     const handleClear = () => {
         if (confirm("모든 광고 트래킹 데이터를 삭제하시겠습니까?")) {
@@ -251,6 +288,12 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                 >
                     📦 패킷 상세
                 </button>
+                <button
+                    className={`view-tab ${currentView === "tiara" ? "active" : ""}`}
+                    onClick={() => setCurrentView("tiara")}
+                >
+                    📈 티아라
+                </button>
             </div>
 
             <div className="ad-tracking-table-container">
@@ -303,7 +346,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         </tbody>
                     </table>
                     )
-                ) : (
+                ) : currentView === "packets" ? (
                     /* Packets View */
                     packets.length === 0 ? (
                         <div className="empty-state">
@@ -381,7 +424,96 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                             </tbody>
                         </table>
                     )
-                )}
+                ) : currentView === "tiara" ? (
+                    /* Tiara View */
+                    <>
+                        {/* Action Type Filter */}
+                        <div className="tiara-filter-section" style={{ padding: "16px", borderBottom: "1px solid #e5e7eb" }}>
+                            <label style={{ marginRight: "8px", fontWeight: "500" }}>
+                                Action Type:
+                            </label>
+                            <select
+                                value={actionTypeFilter}
+                                onChange={(e) => setActionTypeFilter(e.target.value)}
+                                className="status-filter"
+                                style={{ minWidth: "150px" }}
+                            >
+                                <option value="all">All ({tiaraEvents.length})</option>
+                                {uniqueActionTypes.map((actionType) => {
+                                    const count = tiaraEvents.filter(
+                                        (e) => e.actionType === actionType
+                                    ).length;
+                                    return (
+                                        <option key={actionType} value={actionType}>
+                                            {actionType} ({count})
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                            <span style={{ marginLeft: "16px", color: "#6b7280" }}>
+                                Showing {filteredTiaraEvents.length} events
+                            </span>
+                        </div>
+
+                        {filteredTiaraEvents.length === 0 ? (
+                            <div className="empty-state">
+                                <p>📭 Tiara 이벤트가 없습니다</p>
+                                <p className="hint">
+                                    키즈노트 앱에서 사용자 행동이 발생하면 자동으로 추적됩니다
+                                </p>
+                            </div>
+                        ) : (
+                            <table className="ad-tracking-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Action Type</th>
+                                        <th>Action Name</th>
+                                        <th>Page</th>
+                                        <th>Section</th>
+                                        <th>Summary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredTiaraEvents.map((event) => (
+                                        <tr
+                                            key={event.id}
+                                            onClick={() => setSelectedTiaraEvent(event)}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <td className="ad-time">
+                                                {formatTiaraTimestamp(event.timestamp)}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    className="packet-type-badge"
+                                                    style={{
+                                                        backgroundColor: "#8b5cf6",
+                                                    }}
+                                                >
+                                                    {event.actionType}
+                                                </span>
+                                            </td>
+                                            <td>{event.actionName}</td>
+                                            <td>{event.page}</td>
+                                            <td>{event.section}</td>
+                                            <td
+                                                style={{
+                                                    maxWidth: "300px",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                {event.summary}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </>
+                ) : null}
             </div>
 
             {/* Packet Detail Modal */}
@@ -496,6 +628,86 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                                 </ul>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Tiara Event Detail Modal */}
+            {selectedTiaraEvent && (
+                <div
+                    className="packet-detail-modal"
+                    onClick={() => setSelectedTiaraEvent(null)}
+                >
+                    <div
+                        className="packet-detail-content"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ maxWidth: "800px" }}
+                    >
+                        <div className="packet-detail-header">
+                            <h3>📈 Tiara 이벤트 상세</h3>
+                            <button
+                                className="close-button"
+                                onClick={() => setSelectedTiaraEvent(null)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Timestamp:</strong>{" "}
+                            {formatTiaraTimestamp(selectedTiaraEvent.timestamp)}
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Action Type:</strong>{" "}
+                            <span
+                                className="packet-type-badge"
+                                style={{
+                                    backgroundColor: "#8b5cf6",
+                                    marginLeft: "8px",
+                                }}
+                            >
+                                {selectedTiaraEvent.actionType}
+                            </span>
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Action Name:</strong>{" "}
+                            {selectedTiaraEvent.actionName}
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Page:</strong> {selectedTiaraEvent.page}
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Section:</strong> {selectedTiaraEvent.section}
+                        </div>
+
+                        <div style={{ marginBottom: "16px" }}>
+                            <strong>Summary:</strong> {selectedTiaraEvent.summary}
+                        </div>
+
+                        <div>
+                            <strong>Raw Event Data:</strong>
+                            <pre
+                                style={{
+                                    marginTop: "8px",
+                                    padding: "12px",
+                                    background: "#f3f4f6",
+                                    borderRadius: "4px",
+                                    overflow: "auto",
+                                    maxHeight: "400px",
+                                    fontSize: "12px",
+                                }}
+                            >
+                                {JSON.stringify(
+                                    selectedTiaraEvent.rawData,
+                                    null,
+                                    2
+                                )}
+                            </pre>
+                        </div>
                     </div>
                 </div>
             )}

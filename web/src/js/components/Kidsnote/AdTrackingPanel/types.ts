@@ -101,3 +101,55 @@ export interface PacketDetail {
     statusCode?: number;         // Response status code
     responseSize?: number;       // Response size (bytes)
 }
+
+/**
+ * Tiara 이벤트 타입
+ */
+export type TiaraActionType = string; // ViewImp, Click, Search, etc.
+
+/**
+ * Tiara 이벤트 상세 정보
+ */
+export interface TiaraEvent {
+    id: string;                    // flow ID
+    timestamp: number;             // access_timestamp (ms)
+    actionType: string;            // action.type
+    actionName: string;            // action.name
+    page: string;                  // common.page
+    section: string;               // common.section
+    summary?: string;              // 추가 요약 정보 (imp_id, copy 등)
+    rawData: any;                  // 원본 이벤트 객체
+}
+
+/**
+ * Tiara 요청 Body 구조
+ */
+export interface TiaraRequestBody extends Array<TiaraEventData> {}
+
+/**
+ * Tiara 이벤트 데이터
+ */
+export interface TiaraEventData {
+    action: {
+        type: string;      // ViewImp, Click, etc.
+        name: string;      // trackViewImp, trackClick, etc.
+        [key: string]: any;
+    };
+    common: {
+        page: string;
+        section: string;
+        access_timestamp: number;
+        [key: string]: any;
+    };
+    viewimp_contents?: Array<{
+        imp_id?: string;
+        copy?: string;
+        [key: string]: any;
+    }>;
+    click_contents?: Array<{
+        imp_id?: string;
+        copy?: string;
+        [key: string]: any;
+    }>;
+    [key: string]: any;
+}
