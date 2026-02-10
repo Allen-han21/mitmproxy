@@ -111,14 +111,15 @@ export type TiaraActionType = string; // ViewImp, Click, Search, etc.
  * Tiara 이벤트 상세 정보
  */
 export interface TiaraEvent {
-    id: string;                    // flow ID
+    id: string;                    // flow ID 또는 flow ID + index
     timestamp: number;             // access_timestamp (ms)
     actionType: string;            // action.type
     actionName: string;            // action.name
     page: string;                  // common.page
     section: string;               // common.section
     summary?: string;              // 추가 요약 정보 (imp_id, copy 등)
-    rawData: any;                  // 원본 이벤트 객체
+    rawData: any;                  // 원본 이벤트 객체 (null이면 아직 로드 안됨)
+    flowId?: string;               // Content를 fetch하기 위한 flow ID
 }
 
 /**

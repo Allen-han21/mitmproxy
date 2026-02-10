@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Menu } from "../ProxyApp";
 
-function AdTrackingMenu() {
+function TrackerMenu() {
     return (
         <div className="menu-row">
             <div className="menu-group">
                 <div className="menu-content">
                     <span className="menu-legend">
-                        📱 Kidsnote Ad Tracking Analysis
+                        Event Trackers
                     </span>
                 </div>
             </div>
@@ -15,6 +15,6 @@ function AdTrackingMenu() {
     );
 }
 
-AdTrackingMenu.title = "Ad Tracking";
+TrackerMenu.title = "Trackers";
 
-export default AdTrackingMenu as Menu;
+export default TrackerMenu as Menu;

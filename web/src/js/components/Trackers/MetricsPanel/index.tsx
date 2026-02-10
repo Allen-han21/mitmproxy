@@ -21,8 +21,8 @@ export function PureMetricsPanel({ flows }: MetricsPanelProps) {
     const metrics = React.useMemo(() => calculateSummary(flows), [flows]);
 
     return (
-        <div className="kidsnote-metrics-panel">
-            <h2>📊 Network Metrics</h2>
+        <div className="mitmios-metrics-panel">
+            <h2>Network Metrics</h2>
 
             {/* Summary Cards */}
             <div className="metrics-grid">
@@ -73,10 +73,9 @@ export function PureMetricsPanel({ flows }: MetricsPanelProps) {
 
             {/* Footer Info */}
             <div className="metrics-info">
-                <p>✨ Kidsnote mitmweb - Network Debugging Tool</p>
+                <p>mitmios - iOS Network Debugging Tool</p>
                 <p>
-                    🚀 Phase 1: MVP - Real-time metrics from {formatNumber(flows.length)}{" "}
-                    flows
+                    Real-time metrics from {formatNumber(flows.length)} flows
                 </p>
             </div>
         </div>

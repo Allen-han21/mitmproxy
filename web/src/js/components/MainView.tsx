@@ -6,8 +6,8 @@ import { useAppSelector } from "../ducks";
 import CaptureSetup from "./Modes/CaptureSetup";
 import Modes from "./Modes";
 import { Tab } from "../ducks/ui/tabs";
-import MetricsPanel from "./Kidsnote/MetricsPanel";
-import AdTrackingPanel from "./Kidsnote/AdTrackingPanel";
+import MetricsPanel from "./Trackers/MetricsPanel";
+import AdTrackingPanel from "./Trackers/AdTrackingPanel";
 
 export default function MainView() {
     const hasOneFlowSelected = useAppSelector(
@@ -22,7 +22,7 @@ export default function MainView() {
                 <Modes />
             ) : currentTab === Tab.Metrics ? (
                 <MetricsPanel />
-            ) : currentTab === Tab.AdTracking ? (
+            ) : currentTab === Tab.Trackers ? (
                 <AdTrackingPanel />
             ) : (
                 <>

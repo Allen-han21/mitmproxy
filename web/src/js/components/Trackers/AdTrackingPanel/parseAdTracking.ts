@@ -186,11 +186,11 @@ export function formatTimestamp(timestamp: number | undefined): string {
 export function formatStatus(status: AdStatus): string {
     switch (status) {
         case AdStatus.REQUESTED:
-            return "요청됨";
+            return "Requested";
         case AdStatus.IMPRESSED:
-            return "노출됨";
+            return "Impressed";
         case AdStatus.CLICKED:
-            return "클릭됨";
+            return "Clicked";
         default:
             return status;
     }
@@ -253,11 +253,11 @@ export function createPacketDetail(flow: HTTPFlow): PacketDetail | null {
 export function formatPacketType(type: TrackingEventType): string {
     switch (type) {
         case TrackingEventType.REQUEST:
-            return "광고 요청";
+            return "Ad Request";
         case TrackingEventType.IMPRESSION:
-            return "노출";
+            return "Impression";
         case TrackingEventType.CLICK:
-            return "클릭";
+            return "Click";
         default:
             return type;
     }

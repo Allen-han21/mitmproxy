@@ -20,6 +20,9 @@ import {
     parseTiaraEvents,
     extractUniqueActionTypes,
     formatTiaraTimestamp,
+    fetchTiaraEventDetails,
+    isTiaraFlow,
+    getActionTypeColor,
 } from "./parseTiara";
 import { AdData, AdStatus, TrackingEventType, PacketDetail, TiaraEvent } from "./types";
 import "./AdTrackingPanel.css";
@@ -35,7 +38,7 @@ function parseAdDataFromFlows(flows: Flow[]): Map<string, AdData> {
         if (flow.type !== "http") return;
         const httpFlow = flow as HTTPFlow;
 
-        // 1. 광고 목록 요청 처리
+        // 1. Ad list request
         if (isAdRequestFlow(httpFlow) && httpFlow.response) {
             // TODO: 실제 response body 파싱
             // 현재는 임시로 더미 데이터 생성
@@ -135,7 +138,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
         });
     }, [adsMap, searchQuery, statusFilter]);
 
-    // 패킷 목록 추출
+    // Extract packet list
     const packets = React.useMemo(() => {
         const packetList: PacketDetail[] = [];
 
@@ -143,7 +146,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
             if (flow.type !== "http") return;
             const httpFlow = flow as HTTPFlow;
 
-            // 광고 API 패킷만 필터링
+            // Filter ad API packets only
             if (isAdApiFlow(httpFlow)) {
                 const packet = createPacketDetail(httpFlow);
                 if (packet) {
@@ -156,21 +159,41 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
         return packetList.sort((a, b) => b.timestamp - a.timestamp);
     }, [flows]);
 
-    // Tiara 이벤트 목록 추출
-    const tiaraEvents = React.useMemo(() => {
-        const eventList: TiaraEvent[] = [];
+    // Tiara 이벤트 목록 (비동기 로드)
+    const [tiaraEvents, setTiaraEvents] = React.useState<TiaraEvent[]>([]);
+    const [loadingTiara, setLoadingTiara] = React.useState(false);
 
-        flows.forEach((flow) => {
-            if (flow.type !== "http") return;
-            const httpFlow = flow as HTTPFlow;
+    // Tiara flows를 감지하고 content fetch
+    React.useEffect(() => {
+        const loadTiaraEvents = async () => {
+            setLoadingTiara(true);
+            const eventList: TiaraEvent[] = [];
 
-            // Tiara API 요청 파싱
-            const events = parseTiaraEvents(httpFlow);
-            eventList.push(...events);
-        });
+            console.log("[Tiara] Total flows:", flows.length);
 
-        // 최신순 정렬
-        return eventList.sort((a, b) => b.timestamp - a.timestamp);
+            // Tiara flows만 추출
+            const tiaraFlows = flows.filter((flow) => {
+                if (flow.type !== "http") return false;
+                return isTiaraFlow(flow as HTTPFlow);
+            });
+
+            console.log("[Tiara] Found", tiaraFlows.length, "Tiara flows");
+
+            // 각 Tiara flow의 content를 fetch
+            for (const flow of tiaraFlows) {
+                const httpFlow = flow as HTTPFlow;
+                const events = await fetchTiaraEventDetails(httpFlow);
+                eventList.push(...events);
+            }
+
+            console.log("[Tiara] Total loaded events:", eventList.length);
+
+            // 최신순 정렬
+            setTiaraEvents(eventList.sort((a, b) => b.timestamp - a.timestamp));
+            setLoadingTiara(false);
+        };
+
+        loadTiaraEvents();
     }, [flows]);
 
     // 필터링된 Tiara 이벤트
@@ -187,18 +210,18 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
     }, [tiaraEvents]);
 
     const handleClear = () => {
-        if (confirm("모든 광고 트래킹 데이터를 삭제하시겠습니까?")) {
+        if (confirm("Clear all tracker data?")) {
             // TODO: Redux action으로 변경
             window.location.reload();
         }
     };
 
     return (
-        <div className="kidsnote-ad-tracking-panel">
+        <div className="mitmios-tracker-panel">
             <div className="ad-tracking-header">
-                <h2>📱 Kidsnote Ad Tracking Analysis</h2>
+                <h2>Event Trackers</h2>
                 <p className="description">
-                    키즈노트 광고 트래킹 분석 대시보드 - 광고 요청(req), 노출(imp), 클릭(click)을 자동으로 추적합니다
+                    Track ad requests, impressions, clicks and analytics events in real-time
                 </p>
             </div>
 
@@ -206,7 +229,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                 <div className="search-box">
                     <input
                         type="text"
-                        placeholder="🔍 Ad ID 또는 제목 검색..."
+                        placeholder="Search by Ad ID or title..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="search-input"
@@ -221,25 +244,25 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         }
                         className="status-filter"
                     >
-                        <option value="all">모든 상태</option>
-                        <option value={AdStatus.REQUESTED}>요청됨</option>
-                        <option value={AdStatus.IMPRESSED}>노출됨</option>
-                        <option value={AdStatus.CLICKED}>클릭됨</option>
+                        <option value="all">All Status</option>
+                        <option value={AdStatus.REQUESTED}>Requested</option>
+                        <option value={AdStatus.IMPRESSED}>Impressed</option>
+                        <option value={AdStatus.CLICKED}>Clicked</option>
                     </select>
                 </div>
 
                 <button onClick={handleClear} className="clear-button">
-                    🗑️ 초기화
+                    Clear
                 </button>
             </div>
 
             <div className="ad-tracking-stats">
                 <div className="stat-card">
-                    <div className="stat-label">총 광고</div>
+                    <div className="stat-label">Total Ads</div>
                     <div className="stat-value">{adsMap.size}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-label">노출됨</div>
+                    <div className="stat-label">Impressed</div>
                     <div className="stat-value">
                         {
                             Array.from(adsMap.values()).filter(
@@ -249,7 +272,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                     </div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-label">클릭됨</div>
+                    <div className="stat-label">Clicked</div>
                     <div className="stat-value">
                         {
                             Array.from(adsMap.values()).filter(
@@ -280,19 +303,19 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                     className={`view-tab ${currentView === "ads" ? "active" : ""}`}
                     onClick={() => setCurrentView("ads")}
                 >
-                    📊 광고 요약
+                    Ad Summary
                 </button>
                 <button
                     className={`view-tab ${currentView === "packets" ? "active" : ""}`}
                     onClick={() => setCurrentView("packets")}
                 >
-                    📦 패킷 상세
+                    Packets
                 </button>
                 <button
                     className={`view-tab ${currentView === "tiara" ? "active" : ""}`}
                     onClick={() => setCurrentView("tiara")}
                 >
-                    📈 티아라
+                    Tiara
                 </button>
             </div>
 
@@ -300,9 +323,9 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                 {currentView === "ads" ? (
                     ads.length === 0 ? (
                         <div className="empty-state">
-                            <p>📭 광고 트래킹 데이터가 없습니다</p>
+                            <p>No ad tracking data yet</p>
                             <p className="hint">
-                                키즈노트 앱에서 광고를 요청하면 자동으로 추적됩니다
+                                Ad events will appear here automatically when detected
                             </p>
                         </div>
                     ) : (
@@ -310,10 +333,10 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         <thead>
                             <tr>
                                 <th>Ad ID</th>
-                                <th>광고 제목</th>
-                                <th>상태</th>
-                                <th>노출 시간</th>
-                                <th>클릭 시간</th>
+                                <th>Ad Title</th>
+                                <th>Status</th>
+                                <th>Impression Time</th>
+                                <th>Click Time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -350,17 +373,17 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                     /* Packets View */
                     packets.length === 0 ? (
                         <div className="empty-state">
-                            <p>📭 패킷 데이터가 없습니다</p>
+                            <p>No packet data yet</p>
                             <p className="hint">
-                                키즈노트 앱에서 광고 API를 호출하면 자동으로 추적됩니다
+                                Packets will appear here when ad API calls are detected
                             </p>
                         </div>
                     ) : (
                         <table className="ad-tracking-table">
                             <thead>
                                 <tr>
-                                    <th>시간</th>
-                                    <th>타입</th>
+                                    <th>Time</th>
+                                    <th>Type</th>
                                     <th>Method</th>
                                     <th>URL</th>
                                     <th>Ad ID</th>
@@ -455,11 +478,18 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                             </span>
                         </div>
 
-                        {filteredTiaraEvents.length === 0 ? (
+                        {loadingTiara ? (
                             <div className="empty-state">
-                                <p>📭 Tiara 이벤트가 없습니다</p>
+                                <p>Loading Tiara events...</p>
                                 <p className="hint">
-                                    키즈노트 앱에서 사용자 행동이 발생하면 자동으로 추적됩니다
+                                    Analyzing request body
+                                </p>
+                            </div>
+                        ) : filteredTiaraEvents.length === 0 ? (
+                            <div className="empty-state">
+                                <p>No Tiara events yet</p>
+                                <p className="hint">
+                                    Events will appear here when user actions are detected
                                 </p>
                             </div>
                         ) : (
@@ -488,7 +518,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                                                 <span
                                                     className="packet-type-badge"
                                                     style={{
-                                                        backgroundColor: "#8b5cf6",
+                                                        backgroundColor: getActionTypeColor(event.actionType),
                                                     }}
                                                 >
                                                     {event.actionType}
@@ -527,7 +557,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="packet-detail-header">
-                            <h3>📦 패킷 상세 정보</h3>
+                            <h3>Packet Details</h3>
                             <button
                                 className="close-button"
                                 onClick={() => setSelectedPacket(null)}
@@ -537,7 +567,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         </div>
 
                         <div style={{ marginBottom: "16px" }}>
-                            <strong>타입:</strong>{" "}
+                            <strong>Type:</strong>{" "}
                             <span
                                 className="packet-type-badge"
                                 style={{
@@ -552,7 +582,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         </div>
 
                         <div style={{ marginBottom: "16px" }}>
-                            <strong>시간:</strong>{" "}
+                            <strong>Time:</strong>{" "}
                             {formatTimestamp(selectedPacket.timestamp)}
                         </div>
 
@@ -644,7 +674,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                         style={{ maxWidth: "800px" }}
                     >
                         <div className="packet-detail-header">
-                            <h3>📈 Tiara 이벤트 상세</h3>
+                            <h3>Tiara Event Details</h3>
                             <button
                                 className="close-button"
                                 onClick={() => setSelectedTiaraEvent(null)}
@@ -663,7 +693,7 @@ export function PureAdTrackingPanel({ flows }: AdTrackingPanelProps) {
                             <span
                                 className="packet-type-badge"
                                 style={{
-                                    backgroundColor: "#8b5cf6",
+                                    backgroundColor: getActionTypeColor(selectedTiaraEvent.actionType),
                                     marginLeft: "8px",
                                 }}
                             >
