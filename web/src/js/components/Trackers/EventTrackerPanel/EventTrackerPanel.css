@@ -1,0 +1,316 @@
+.etp-panel {
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header */
+.etp-header {
+    margin-bottom: 20px;
+}
+
+.etp-header h2 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.etp-desc {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Stats */
+.etp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.etp-stat-card {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.etp-stat-label {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.etp-stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Tabs */
+.etp-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.etp-tab {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: -2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.etp-tab:hover {
+    color: #3b82f6;
+}
+
+.etp-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.etp-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.etp-tab.active .etp-tab-count {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+/* Table */
+.etp-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.etp-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: #666;
+}
+
+.etp-empty p {
+    margin: 8px 0;
+}
+
+.etp-hint {
+    font-size: 14px;
+    color: #999;
+}
+
+.etp-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.etp-table thead {
+    background: #f3f4f6;
+}
+
+.etp-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.etp-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.etp-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.etp-table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+/* Cell renderers */
+.etp-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.etp-code {
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: "Courier New", monospace;
+    color: #4b5563;
+}
+
+.etp-mono {
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.etp-method {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.etp-status-code {
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.etp-status-code.success {
+    color: #10b981;
+}
+
+.etp-status-code.error {
+    color: #ef4444;
+}
+
+/* Modal */
+.etp-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.etp-modal {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.etp-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.etp-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.etp-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.etp-close:hover {
+    background: #f3f4f6;
+}
+
+.etp-detail-row {
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.etp-url {
+    margin-top: 4px;
+    padding: 8px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #4b5563;
+    word-break: break-all;
+}
+
+.etp-extracted-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.etp-extracted-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+}
+
+.etp-extracted-list li:last-child {
+    border-bottom: none;
+}
+
+.etp-extracted-key {
+    font-weight: 600;
+    color: #4b5563;
+    min-width: 120px;
+}
+
+.etp-extracted-value {
+    font-family: "Courier New", monospace;
+    color: #6b7280;
+    word-break: break-all;
+}
