@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import FileMenu from "./Header/FileMenu";
 import ConnectionIndicator from "./Header/ConnectionIndicator";
+import ThemeToggle from "./Header/ThemeToggle";
 import HideInStatic from "./common/HideInStatic";
 import CaptureMenu from "./Header/CaptureMenu";
 import { useAppDispatch, useAppSelector } from "../ducks";
@@ -70,6 +71,7 @@ export default function Header() {
                         {tabs[tab].title}
                     </a>
                 ))}
+                <ThemeToggle />
                 <HideInStatic>
                     <ConnectionIndicator />
                 </HideInStatic>

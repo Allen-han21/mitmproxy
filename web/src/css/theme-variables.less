@@ -1,0 +1,239 @@
+// Theme Variables - CSS Custom Properties for runtime theme switching
+// Light theme is default (:root), dark overrides via [data-theme="dark"]
+
+:root {
+    // Backgrounds
+    --bg-primary: #ffffff;
+    --bg-secondary: #f2f2f2;
+    --bg-tertiary: #fcfcfc;
+    --bg-surface: #f9f9f9;
+
+    // Text
+    --text-primary: #303030;
+    --text-secondary: #777;
+    --text-muted: lightgray;
+
+    // Borders
+    --border-primary: #e0e0e0;
+    --border-secondary: #bebebe;
+    --border-tertiary: #aaa;
+    --border-light: #bfbfbf;
+    --border-extra-light: #d9d9d9;
+    --border-input: #ccc;
+
+    // Flow table rows
+    --row-odd: hsl(0, 0%, 100%);
+    --row-even: hsl(0, 0%, 95%);
+    --row-highlighted: hsl(48, 100%, 80%);
+    --row-highlighted-even: hsl(48, 100%, 75%);
+    --row-selected: hsl(209, 51%, 92%);
+    --row-selected-even: hsl(209, 51%, 86%);
+    --row-selected-highlighted: hsl(209, 96%, 74%);
+    --row-selected-highlighted-even: hsl(209, 96%, 68%);
+
+    // Sort
+    --sort-bg: #f8f8f8;
+    --sort-bg-fade: rgba(248, 248, 248, 0.8);
+
+    // Selection / hover
+    --selection-hover: hsla(209, 52%, 84%, 0.5);
+    --quickaction-hover: rgba(0, 0, 0, 5%);
+
+    // Accent
+    --accent-blue: #428bca;
+
+    // Shadows
+    --shadow-color: lightgray;
+    --shadow-section: gray;
+
+    // Status / syntax colors
+    --intercept-color: hsl(30, 100%, 50%);
+    --error-color: darkred;
+    --repeat-color: green;
+    --tls-https: rgba(0, 185, 0, 0.5);
+
+    // Syntax highlighting
+    --syntax-offset: blue;
+    --syntax-tag: darkgreen;
+    --syntax-string: firebrick;
+    --syntax-number: purple;
+    --syntax-keyword: blue;
+
+    // Mode
+    --green-border: #77c77a;
+    --gray-border: #b2b2b2;
+    --process-name: #333;
+    --process-icon: #5f6368;
+    --dropdown-hover: #f0f0f0;
+    --dropdown-selected: #e0e0e0;
+
+    // Close button
+    --close-color: grey;
+    --hover-close: black;
+
+    // Command
+    --command-suggestion: #9c9c9c;
+
+    // Flow detail
+    --table-row-border: #f7f7f7;
+    --edit-flow-bg: rgba(255, 255, 255, 0.7);
+    --edit-flow-hover-bg: rgba(239, 108, 0, 0.7);
+
+    // KV add row
+    --kv-add-color: #666;
+
+    // Input text
+    --input-text: black;
+}
+
+[data-theme="dark"] {
+    // Backgrounds
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #252525;
+    --bg-surface: #333333;
+
+    // Text
+    --text-primary: #e0e0e0;
+    --text-secondary: #999;
+    --text-muted: #555;
+
+    // Borders
+    --border-primary: #444;
+    --border-secondary: #555;
+    --border-tertiary: #555;
+    --border-light: #444;
+    --border-extra-light: #3a3a3a;
+    --border-input: #555;
+
+    // Flow table rows
+    --row-odd: #1e1e1e;
+    --row-even: #262626;
+    --row-highlighted: hsl(48, 60%, 25%);
+    --row-highlighted-even: hsl(48, 60%, 20%);
+    --row-selected: hsl(209, 40%, 25%);
+    --row-selected-even: hsl(209, 40%, 20%);
+    --row-selected-highlighted: hsl(209, 70%, 30%);
+    --row-selected-highlighted-even: hsl(209, 70%, 25%);
+
+    // Sort
+    --sort-bg: #353535;
+    --sort-bg-fade: rgba(53, 53, 53, 0.8);
+
+    // Selection / hover
+    --selection-hover: hsla(209, 52%, 40%, 0.5);
+    --quickaction-hover: rgba(255, 255, 255, 10%);
+
+    // Accent
+    --accent-blue: #5a9fd4;
+
+    // Shadows
+    --shadow-color: #111;
+    --shadow-section: #111;
+
+    // Status / syntax colors
+    --intercept-color: hsl(30, 100%, 60%);
+    --error-color: #e87d7d;
+    --repeat-color: #7ec699;
+    --tls-https: rgba(0, 185, 0, 0.3);
+
+    // Syntax highlighting
+    --syntax-offset: #6ab0f3;
+    --syntax-tag: #7ec699;
+    --syntax-string: #e87d7d;
+    --syntax-number: #c792ea;
+    --syntax-keyword: #6ab0f3;
+
+    // Mode
+    --green-border: #4a9a4d;
+    --gray-border: #555;
+    --process-name: #ccc;
+    --process-icon: #999;
+    --dropdown-hover: #3a3a3a;
+    --dropdown-selected: #444;
+
+    // Close button
+    --close-color: #999;
+    --hover-close: white;
+
+    // Command
+    --command-suggestion: #4a4a4a;
+
+    // Flow detail
+    --table-row-border: #333;
+    --edit-flow-bg: rgba(50, 50, 50, 0.7);
+    --edit-flow-hover-bg: rgba(239, 108, 0, 0.5);
+
+    // KV add row
+    --kv-add-color: #999;
+
+    // Input text
+    --input-text: #e0e0e0;
+
+    // Bootstrap component overrides
+    body {
+        color: var(--text-primary);
+        background-color: var(--bg-primary);
+    }
+    .navbar-default {
+        background-color: var(--bg-primary);
+        border-color: var(--border-primary);
+    }
+    .btn-default {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-primary);
+        color: var(--text-primary);
+        &:hover, &:focus {
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+        }
+    }
+    .form-control {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-input);
+        color: var(--text-primary);
+    }
+    .popover {
+        background-color: var(--bg-surface);
+        border-color: var(--border-primary);
+        .popover-content {
+            color: var(--text-primary);
+        }
+    }
+    .modal-content {
+        background-color: var(--bg-primary);
+        border-color: var(--border-primary);
+        color: var(--text-primary);
+    }
+    .modal-header {
+        border-bottom-color: var(--border-primary);
+    }
+    .modal-footer {
+        border-top-color: var(--border-primary);
+    }
+    .table {
+        color: var(--text-primary);
+    }
+    .dropdown-menu {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-primary);
+        > li > a {
+            color: var(--text-primary);
+            &:hover, &:focus {
+                background-color: var(--dropdown-hover);
+                color: var(--text-primary);
+            }
+        }
+    }
+    pre, code {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-primary);
+    }
+    a {
+        color: var(--accent-blue);
+    }
+    .nav-tabs > a {
+        color: var(--text-primary);
+    }
+}

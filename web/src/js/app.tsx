@@ -8,6 +8,7 @@ import useUrlState from "./urlState";
 import WebSocketBackend from "./backends/websocket";
 import StaticBackend from "./backends/static";
 import { store } from "./ducks";
+import { syncSystemTheme } from "./ducks/ui/theme";
 
 // Extend the Window interface to avoid TS errors
 declare global {
@@ -25,6 +26,21 @@ if (window.MITMWEB_STATIC) {
 }
 
 useUrlState(store);
+
+// Theme: sync data-theme attribute with Redux state
+const applyTheme = () => {
+    const { effective } = store.getState().ui.theme;
+    document.documentElement.setAttribute("data-theme", effective);
+};
+applyTheme();
+store.subscribe(applyTheme);
+
+// Theme: listen for OS dark mode changes
+window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+        store.dispatch(syncSystemTheme());
+    });
 
 window.addEventListener("error", (e: ErrorEvent) => {
     store.dispatch(addLog(`${e.message}\n${e.error.stack}`));

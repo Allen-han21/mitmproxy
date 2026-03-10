@@ -18,11 +18,11 @@
     }
 
     .green-left-border {
-        border-left: 10px solid #77c77a;
+        border-left: 10px solid var(--green-border);
     }
 
     .gray-left-border {
-        border-left: 10px solid #b2b2b2;
+        border-left: 10px solid var(--gray-border);
     }
 
     .modes-container {
@@ -37,7 +37,7 @@
     }
 
     .mode-description {
-        color: #b2b2b2;
+        color: var(--gray-border);
         margin-top: -10px;
     }
 
@@ -89,7 +89,7 @@
             display: flex;
             flex-direction: row;
             gap: 5px;
-            background-color: #e0e0e0;
+            background-color: var(--dropdown-selected);
             padding: 5px;
             border-radius: 4px;
             height: 30px;
@@ -115,7 +115,7 @@
 
             .dropdown-header {
                 padding: 5px;
-                border: 1px solid #ccc;
+                border: 1px solid var(--border-input);
                 border-radius: 4px;
                 cursor: pointer;
                 display: flex;
@@ -129,7 +129,8 @@
                 border: none;
                 flex: 1;
                 outline: none;
-                color: black;
+                color: var(--input-text);
+                background: transparent;
             }
 
             .dropdown-list {
@@ -155,11 +156,11 @@
             }
 
             .dropdown-item.selected {
-                background-color: #e0e0e0;
+                background-color: var(--dropdown-selected);
             }
 
             .dropdown-item:hover {
-                background-color: #f0f0f0;
+                background-color: var(--dropdown-hover);
             }
 
             .process-details {
@@ -171,14 +172,14 @@
             .process-icon {
                 margin-right: 5px;
                 margin-left: 5px;
-                color: #5f6368;
+                color: var(--process-icon);
                 width: 25px;
                 height: 25px;
             }
 
             .process-name {
                 font-weight: 500;
-                color: #333;
+                color: var(--process-name);
             }
 
             .process-separator {
@@ -215,7 +216,7 @@
     }
 
     .mode-input {
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-input);
         margin-left: 10px;
         border-radius: 4px;
         min-width: 120px;
@@ -223,7 +224,7 @@
     }
 
     .mode-reverse-input {
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-input);
         margin-left: 10px;
         margin-right: 10px;
         border-radius: 4px;
@@ -232,7 +233,7 @@
     }
 
     .mode-upstream-input {
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-input);
         margin-left: 10px;
         margin-right: 5px;
         border-radius: 4px;
@@ -242,7 +243,7 @@
 
     .mode-reverse-dropdown {
         margin: 0 5px;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-input);
         border-radius: 4px;
         height: 25px;
     }
@@ -290,10 +291,10 @@
         }
 
         > div {
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-input);
             border-radius: 4px;
             padding: 10px 15px;
-            background-color: #f9f9f9;
+            background-color: var(--bg-surface);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
             &:popover-open {
@@ -310,14 +311,14 @@
             }
             > .mode-input {
                 text-align: right;
-                background-color: white;
+                background-color: var(--bg-primary);
                 margin: 0;
             }
         }
     }
 
     .missing-mode-container {
-        color: #b2b2b2;
+        color: var(--gray-border);
 
         .title-icon-container {
             display: flex;

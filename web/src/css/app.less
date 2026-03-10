@@ -9,6 +9,7 @@ html {
     box-sizing: inherit;
 }
 
+@import (less) "theme-variables.less";
 @import (less) "sprites.less";
 @import (less) "layout.less";
 @import (less) "tabs.less";
@@ -25,3 +26,8 @@ html {
 @import (less) "command.less";
 @import (less) "capture-setup.less";
 @import (less) "mode.less";
+
+body {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+}
