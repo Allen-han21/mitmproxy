@@ -23,6 +23,7 @@ export default function FlowListMenu() {
                 <div className="menu-content">
                     <InterceptInput />
                     <ResumeAll />
+                    <ClearAll />
                 </div>
                 <div className="menu-legend">Intercept</div>
             </div>
@@ -84,6 +85,20 @@ export function ResumeAll() {
             onClick={() => dispatch(flowsActions.resumeAll())}
         >
             Resume All
+        </Button>
+    );
+}
+
+function ClearAll() {
+    const dispatch = useAppDispatch();
+    return (
+        <Button
+            className="btn-sm"
+            title="Clear all flows"
+            icon="fa-trash text-danger"
+            onClick={() => dispatch(flowsActions.clear())}
+        >
+            Clear All
         </Button>
     );
 }
