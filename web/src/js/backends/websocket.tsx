@@ -209,7 +209,15 @@ export default class WebsocketBackend {
         queue.forEach((msg) => this.store.dispatch(msg));
     }
 
+    reconnect() {
+        this.activeFetches = {};
+        this.messageQueue = [];
+        this.filterState = initialFilterState;
+        this.connect();
+    }
+
     onClose(closeEvent: CloseEvent) {
+        if (closeEvent.target !== this.socket) return;
         this.store.dispatch(
             connectionActions.connectionError(
                 `Connection closed at ${new Date().toUTCString()} with error code ${
@@ -220,8 +228,8 @@ export default class WebsocketBackend {
         console.error("websocket connection closed", closeEvent);
     }
 
-    onError(...args) {
-        // FIXME
-        console.error("websocket connection errored", args);
+    onError(event: Event) {
+        if (event.target !== this.socket) return;
+        console.error("websocket connection errored", event);
     }
 }

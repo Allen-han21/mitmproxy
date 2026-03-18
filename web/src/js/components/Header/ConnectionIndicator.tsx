@@ -34,6 +34,17 @@ export default React.memo(
                         title={message}
                     >
                         connection lost
+                        <button
+                            className="reconnect-btn"
+                            onClick={() => {
+                                const backend = (window as any).backend;
+                                if (backend?.reconnect)
+                                    backend.reconnect();
+                            }}
+                            title="Reconnect to server"
+                        >
+                            ↻
+                        </button>
                     </span>
                 );
             /* istanbul ignore next @preserve */

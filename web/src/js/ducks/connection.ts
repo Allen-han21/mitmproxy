@@ -22,8 +22,12 @@ const connectionSlice = createSlice({
     initialState: defaultState,
     reducers: {
         startFetching: (state) => {
-            if (state.state === ConnectionState.INIT) {
+            if (
+                state.state === ConnectionState.INIT ||
+                state.state === ConnectionState.ERROR
+            ) {
                 state.state = ConnectionState.FETCHING;
+                state.message = undefined;
             }
         },
         finishFetching: (state) => {

@@ -153,6 +153,20 @@ header {
     &.error {
         background-color: @label-danger-bg;
         transition: all 0.2s linear;
+
+        .reconnect-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 4px;
+            padding: 0 2px;
+            opacity: 0.8;
+            &:hover {
+                opacity: 1;
+            }
+        }
     }
     &.offline {
         background-color: @label-warning-bg;
