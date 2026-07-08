@@ -8,6 +8,7 @@ import Modes from "./Modes";
 import { Tab } from "../ducks/ui/tabs";
 import MetricsPanel from "./Trackers/MetricsPanel";
 import EventTrackerPanel from "./Trackers/EventTrackerPanel";
+import MockRulesPanel from "./MockRulesPanel";
 
 export default function MainView() {
     const hasOneFlowSelected = useAppSelector(
@@ -24,6 +25,8 @@ export default function MainView() {
                 <MetricsPanel />
             ) : currentTab === Tab.Trackers ? (
                 <EventTrackerPanel />
+            ) : currentTab === Tab.Mock ? (
+                <MockRulesPanel />
             ) : (
                 <>
                     {hasFlows ? <FlowTable /> : <CaptureSetup />}

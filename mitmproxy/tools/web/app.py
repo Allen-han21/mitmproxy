@@ -871,6 +871,26 @@ class ProcessImage(RequestHandler):
         self.write(icon_bytes)
 
 
+class MockRules(RequestHandler):
+    """GET/PUT mock response rules."""
+
+    def get(self):
+        mock_addon = getattr(self.application.master, "mock_addon", None)
+        if mock_addon is None:
+            self.write({"rules": []})
+        else:
+            self.write({"rules": mock_addon.get_rules()})
+
+    def put(self):
+        mock_addon = getattr(self.application.master, "mock_addon", None)
+        if mock_addon is None:
+            raise APIError(503, "Mock addon not loaded")
+        data = self.json
+        rules = data.get("rules", [])
+        mock_addon.set_rules(rules)
+        self.write({"rules": mock_addon.get_rules()})
+
+
 class GZipContentAndFlowFiles(tornado.web.GZipContentEncoding):
     CONTENT_TYPES = {
         "application/octet-stream",
@@ -903,6 +923,7 @@ handlers = [
     (r"/state(?:\.json)?", State),
     (r"/processes", ProcessList),
     (r"/executable-icon", ProcessImage),
+    (r"/mock-rules(?:\.json)?", MockRules),
 ]  # fmt: skip
 
 

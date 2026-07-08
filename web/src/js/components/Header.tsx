@@ -11,6 +11,7 @@ import OptionMenu from "./Header/OptionMenu";
 import FlowMenu from "./Header/FlowMenu";
 import MetricsMenu from "./Header/MetricsMenu";
 import TrackerMenu from "./Header/TrackerMenu";
+import MockMenu from "./Header/MockMenu";
 import { Menu } from "./ProxyApp";
 import { Tab, setCurrent } from "../ducks/ui/tabs";
 
@@ -21,6 +22,7 @@ const tabs: { [key in Tab]: Menu } = {
     [Tab.Flow]: FlowMenu,
     [Tab.Metrics]: MetricsMenu,
     [Tab.Trackers]: TrackerMenu,
+    [Tab.Mock]: MockMenu,
 };
 
 export default function Header() {
@@ -29,7 +31,7 @@ export default function Header() {
     const selectedFlows = useAppSelector((state) => state.flows.selected);
     const [wasFlowSelected, setWasFlowSelected] = useState(false);
 
-    const entries: Tab[] = [Tab.Capture, Tab.FlowList, Tab.Options, Tab.Metrics, Tab.Trackers];
+    const entries: Tab[] = [Tab.Capture, Tab.FlowList, Tab.Options, Tab.Metrics, Tab.Trackers, Tab.Mock];
     if (selectedFlows.length > 0) {
         entries.push(Tab.Flow);
     }

@@ -7,6 +7,7 @@ export enum Tab {
     Flow,
     Metrics,
     Trackers,
+    Mock,
 }
 
 const tabsSlice = createSlice({

@@ -4,14 +4,16 @@ import CodeMirror from "@uiw/react-codemirror";
 import { css } from "@codemirror/lang-css";
 import { html } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
 import { yaml } from "@codemirror/lang-yaml";
 import { SyntaxHighlight } from "../../backends/consts";
+import { useAppSelector } from "../../ducks";
 
 type CodeEditorProps = {
     initialContent: string;
     onChange: (content: string) => void;
     readonly?: boolean;
-    language?: SyntaxHighlight | null;
+    language?: SyntaxHighlight | "json" | null;
 };
 
 export default function CodeEditor({
@@ -20,12 +22,15 @@ export default function CodeEditor({
     language,
     readonly = false,
 }: CodeEditorProps) {
+    const effectiveTheme = useAppSelector((state) => state.ui.theme.effective);
     const stopPropagation = useCallback(
         (e: React.KeyboardEvent<HTMLDivElement>) => e.stopPropagation(),
         [],
     );
     const extensions = useMemo(() => {
         switch (language) {
+            case "json":
+                return [json()];
             case SyntaxHighlight.YAML:
                 return [yaml()];
             case SyntaxHighlight.XML:
@@ -57,6 +62,7 @@ export default function CodeEditor({
                 onChange={onChange}
                 readOnly={readonly}
                 extensions={extensions}
+                theme={effectiveTheme}
             />
         </div>
     );

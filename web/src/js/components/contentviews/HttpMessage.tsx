@@ -46,6 +46,15 @@ type HttpMessageEditProps = {
     stopEdit: () => void;
 };
 
+function tryPrettyPrintJson(text: string): { formatted: string; isJson: boolean } {
+    try {
+        const parsed = JSON.parse(text);
+        return { formatted: JSON.stringify(parsed, null, 2), isJson: true };
+    } catch {
+        return { formatted: text, isJson: false };
+    }
+}
+
 function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
     const dispatch = useAppDispatch();
 
@@ -53,6 +62,33 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
     const url = MessageUtils.getContentURL(flow, message);
     const content = useContent(url, message.contentHash);
     const [editedContent, setEditedContent] = useState<string>();
+
+    const contentType = MessageUtils.getContentType(message) || "";
+    const isJsonContentType = contentType.includes("json");
+
+    const displayContent = React.useMemo(() => {
+        if (!content) return "";
+        if (isJsonContentType) {
+            return tryPrettyPrintJson(content).formatted;
+        }
+        return content;
+    }, [content, isJsonContentType]);
+
+    const isJson = isJsonContentType || (content ? tryPrettyPrintJson(content).isJson : false);
+
+    const handleChange = (value: string) => {
+        if (isJson) {
+            // Re-minify JSON before saving to preserve original compact format
+            try {
+                const parsed = JSON.parse(value);
+                setEditedContent(JSON.stringify(parsed));
+                return;
+            } catch {
+                // If invalid JSON during editing, store as-is
+            }
+        }
+        setEditedContent(value);
+    };
 
     const save = async () => {
         await dispatch(
@@ -83,8 +119,9 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
                 </Button>
             </div>
             <CodeEditor
-                initialContent={content || ""}
-                onChange={setEditedContent}
+                initialContent={displayContent}
+                onChange={handleChange}
+                language={isJson ? "json" : undefined}
             />
         </div>
     );

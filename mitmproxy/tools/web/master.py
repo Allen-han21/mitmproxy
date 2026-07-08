@@ -50,6 +50,11 @@ class WebMaster(master.Master):
             self.events,
             errorcheck.ErrorCheck(),
         )
+
+        # Auto-load mock response addon
+        from mitmproxy.addons.mock_response import MockResponseAddon
+        self.mock_addon = MockResponseAddon()
+        self.addons.add(self.mock_addon)
         self.app = app.Application(self, self.options.web_debug)
         self.proxyserver: Proxyserver = self.addons.get("proxyserver")
         self.proxyserver.servers.changed.connect(self._sig_servers_changed)
